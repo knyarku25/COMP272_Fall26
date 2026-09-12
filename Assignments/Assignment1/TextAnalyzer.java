@@ -45,6 +45,14 @@ public class TextAnalyzer {
         Deque<Character> stack = new ArrayDeque<>();
 
         // TODO: implement using the stack described above
-        return false; // replace this line
+        for (int i = 0; i < normalized.length(); i++) {
+            stack.push(normalized.charAt(i));
+        }
+        for (int i = 0; i < normalized.length(); i++) {
+            if (stack.pop()!= normalized.charAt(i)) {
+                return false;
+            }
     }
+    return true;
+}
 }

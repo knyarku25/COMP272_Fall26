@@ -60,7 +60,11 @@ public class TicketQueue {
      */
     public String serveNext() {
         // TODO: implement
-        return null; // replace this line
+        if (waiting.isEmpty()) {
+            throw new NoSuchElementException("No customers waiting");
+        }
+        servedCount++;
+        return waiting.poll();
     }
 
     /**
@@ -75,6 +79,12 @@ public class TicketQueue {
      */
     public boolean isCustomerWaiting(String customerId) {
         // TODO: implement
-        return false; // replace this line
+        for (String id : waiting) {
+            if (id.equals(customerId)) {
+                return true;
+            }
+        }
+        return false;
     }
+
 }

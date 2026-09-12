@@ -1,7 +1,7 @@
 # COMP 272 — Assignment 1
 ### Building and Using a List, a Stack, and a Queue
 
-**Student:** _\<Your Name\>_  **Section:** _\<Your Section\>_
+**Student:** _\<Kofi Minta Nyarku\>_  **Section:** _\<002\>_
 
 ## Before you start
 

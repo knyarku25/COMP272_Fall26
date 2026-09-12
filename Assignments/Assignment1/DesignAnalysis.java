@@ -27,8 +27,8 @@ public class DesignAnalysis {
      */
     public static int addWithoutTailCost() {
         // Justification:
-        // (write your reasoning here)
-        return -1; // replace with the correct option number
+        // Since there is no tail pointer, add(item) has to start at the head to the end every time. n elements = n stops, so 0(n).
+        return 3; // replace with the correct option number
     }
 
     /**
@@ -43,8 +43,8 @@ public class DesignAnalysis {
      */
     public static int addWithTailCost() {
         // Justification:
-        // (write your reasoning here)
-        return -1; // replace with the correct option number
+        // with the tail pointer, add(item) goes straight to the last node and does tail.next = newNode, tail = newNode.
+        return 1; // replace with the correct option number
     }
 
     /**
@@ -62,10 +62,11 @@ public class DesignAnalysis {
      *   4. None of the above; no ordered collection is needed
      */
     public static int rideShareScenario() {
-        // Justification: name the operation that dominates this
-        // workload, and say what a plain ArrayDeque-based queue gives
-        // up once "cancel a request from the middle" is added as a
-        // requirement.
-        return -1; // replace with the correct option number
+        // Matching riders in arrival order is the main operation, and
+        // that's FIFO, so a queue fits best. Once you add "cancel from
+        // the middle," a plain ArrayDeque loses its O(1) ends-only
+        // guarantee -- you have to scan the line (O(n)) to find and
+        // remove that rider.
+        return 3; // replace with the correct option number
     }
 }
