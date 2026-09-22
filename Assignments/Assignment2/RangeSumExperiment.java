@@ -3,8 +3,8 @@ import java.util.Arrays;
 /**
  * Compares direct range summation with range queries based on prefix sums.
  *
- * Complete the four timing methods marked TODO. Do not change the two
- * range-query algorithms or the input-generation methods.
+ * COMP 272/400c, Assignment 2
+ * Kofi Minta Nyarku
  */
 public class RangeSumExperiment {
 
@@ -59,45 +59,78 @@ public class RangeSumExperiment {
     /**
      * Measures one execution of answerDirectly.
      *
-     * TODO: Execute the method, save one result in resultSink, and return
+     * 
      * the elapsed time in nanoseconds. Only the algorithm call should be
      * inside the measured interval.
      */
     public static long timeDirectOnce(int[] values, int[][] queries) {
-        return 0;
+        long start = System.nanoTime();
+        long[] answers = answerDirectly(values, queries);
+        long end = System.nanoTime();
+
+        resultSink = answers[0];
+
+        return end - start;
     }
 
     /**
      * Measures one execution of answerWithPrefixSums.
      *
-     * TODO: Execute the method, save one result in resultSink, and return
+     * 
      * the elapsed time in nanoseconds. Only the algorithm call should be
      * inside the measured interval.
      */
     public static long timePrefixOnce(int[] values, int[][] queries) {
-        return 0;
+        long start = System.nanoTime();
+        long[] answers = answerWithPrefixSums(values, queries);
+        long end = System.nanoTime();
+
+        resultSink = answers[0];
+
+        return end - start;
     }
 
     /**
      * Returns the mean execution time of answerDirectly.
      *
-     * TODO: Run the algorithm repetitions times. Save one result from every
+     * 
      * execution in resultSink so that the computed answer is used.
      */
     public static long averageDirectTime(
             int[] values, int[][] queries, int repetitions) {
-        return 0;
+                long total = 0;
+
+             for (int run = 0; run < repetitions; run++){
+                long start = System.nanoTime();
+                long[] answers = answerDirectly(values, queries);
+                long end = System.nanoTime();
+
+                resultSink = answers[0];
+                total += end - start; 
+             }
+        return total / repetitions;
     }
 
     /**
      * Returns the mean execution time of answerWithPrefixSums.
      *
-     * TODO: Run the algorithm repetitions times. Save one result from every
+     * 
      * execution in resultSink so that the computed answer is used.
      */
     public static long averagePrefixTime(
             int[] values, int[][] queries, int repetitions) {
-        return 0;
+                long total = 0;
+
+                for(int run = 0; run < repetitions; run++) {
+                    long start = System.nanoTime();
+                    long[] answers = answerWithPrefixSums(values, queries);
+                    long end = System.nanoTime();
+
+                    resultSink = answers[0];
+                    total += end - start; 
+
+                }
+        return total /repetitions;
     }
 
     /**
