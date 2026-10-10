@@ -8,8 +8,8 @@ import java.util.Queue;
  * Do NOT change the provided code, method names, or signatures.
  * You may add private helper methods.
  *
- * Name:
- * Student ID:
+ * Name: Kofi Minta Nyarku
+ * Student ID: 00001715797
  */
 public class BinaryTree {
 
@@ -74,8 +74,31 @@ public class BinaryTree {
      * Duplicate values are allowed in a general binary tree.
      */
     public void add(int value) {
-        // TODO
-        throw new UnsupportedOperationException("TODO: BinaryTree.add");
+        Node newNode = new Node(value);
+
+        if (root == null) {
+            root = newNode;
+            return;
+        }
+
+        Queue<Node> queue = new ArrayDeque<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            Node current = queue.remove();
+
+            if (current.getLeft() == null) {
+                current.setLeft(newNode);
+                return;
+            }
+            if (current.getRight() == null) {
+                current.setRight(newNode);
+                return;
+            }
+            // Both children present: visit them later, left before right.
+            queue.add(current.getLeft());
+            queue.add(current.getRight());
+        }  
     }
 
     /**
@@ -87,20 +110,50 @@ public class BinaryTree {
      *         (including when the tree is empty).
      */
     public Node search(int value) {
-        // TODO
-        throw new UnsupportedOperationException("TODO: BinaryTree.search");
+        return search(root, value);
     }
 
+     /**
+     * Pre-order search of the subtree rooted at {@code node}: check the node
+     * itself, then its left subtree, then its right subtree. Returns the first
+     * match found, or null. The tree is never modified.
+     */
+    private Node search(Node node, int value) {
+        if (node == null) {
+            return null;
+        }
+        if (node.getElement() == value) {
+            return node;
+        }
+        Node found = search(node.getLeft(), value);
+        if (found != null) {
+            return found;
+        }
+        return search(node.getRight(), value);
+    }
+    
     /*
      * Exercise 1, Part C — Complexity of search (n = number of nodes)
      *
-     * Best case:
+     * The input size is n, the number of nodes in the tree. Every call to
+     * the helper only does a few constant-time steps (check for null,
+     * compare the value, call on the children), so the running time depends
+     * on how many nodes we end up visiting.
      *
-     * Worst case:
+     * Best case: O(1). If the value is at the root, the first comparison
+     * matches and we return right away. It doesn't matter how big the tree
+     * is. Same thing for an empty tree, it just returns null.
      *
-     * Input that produces the worst case:
+     * Worst case: O(n). This happens when the value isn't in the tree at
+     * all, or when it's the very last node pre-order reaches. A regular
+     * binary tree has no ordering, so there's no way to know which side the
+     * value might be on. We have to check every node, and each node is
+     * visited only once, so it's n steps of constant work, which is O(n).
      *
-     * Justification:
+     * Example of the worst case: build the tree with add(1) through add(7)
+     * and call search(99). Since 99 isn't there, all 7 nodes get checked
+     * before it returns null. Searching for 7 is also a worst case, because
+     * 7 is the last node in pre-order (1, 2, 4, 5, 3, 6, 7).
      */
 
     // ------------------------------------------------------------------
