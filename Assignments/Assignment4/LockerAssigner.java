@@ -75,9 +75,10 @@ public class LockerAssigner {
      * Q1. Which structure did you use (TreeSet, TreeMap, or both), what does it
      *     store, and why does it fit this problem?
      *  A TreeSet<Integer> holding the free locker numbers. The closest free
-     * locker is either floor(prefrerred) or ceiling(preferred), and TreeSet
+     * locker is either floor(preferred) or ceiling(preferred), and TreeSet
      * returns both directly. It also supports remove (assign) and add (release)
      * quickly, so no scanning is needed.
+     * 
      * Q2. If you had stored the free lockers in an unsorted ArrayList instead,
      *     what would be the worst-case running time of assign and of release?
      * Assign: O(n). With no order, every free locker (up to n) must be checked
