@@ -71,19 +71,79 @@ public class RBTree extends BinarySearchTree {
      */
     @Override
     public Node add(int value) {
-        // TODO (Exercise 2): implement red-black insertion.
-        // Hint: BinarySearchTree.add already does Step 1 and creates an RBNode.
-        //       You may add private helper methods (for example insertFixup).
-        throw new UnsupportedOperationException("Implement RB insertion");
+        Node inserted = super.add(value);
+        if (inserted == null) {
+            return null; // duplicate
+        }
+        insertFixup(inserted);
+        return inserted;
     }
 
     /*
      * ======================== Exercise 2, Part B — Analysis ========================
-     *
+     * Let n be the number of nodes and h the height, with h <= 2 log2(n + 1).
+     * 
+     * Q1. Only Cases 2 and 3 rotate, and they end the loop: Case 3 colors p
+     *  black, so isRed(z.parent) becomes false. Case 2 (1 rotation) always leads
+     * to Case 3 (1 rotation), so an insertion does at most 2 rotations.
+     * Case 1 recolors 3 nodes and moves z up two levels without stopping the loop,
+     * so it can repeat up to h/2 times: O(h) = O(log n) recolorings. 
+     * 
+     * Q2. add is O(log n) in the worst case.
+     * - super.add follows one root-to-leaf path and updates heights back up: O(h).
+     * - insertFixup does O(1) work per iteration for at most O(h) iterations: O(h).
+     * - Coloring the root black: O(1).
+     *  Total: O(h) = O(2 log2(n + 1)) = O(log n).
      *
      * ===============================================================================
      */
+    private void insertFixup(Node z) {
+        while (isRed(z.parent)) {
+            Node p = z.parent;
+            Node g = p.parent; 
 
+            if (p == g.left) {
+                Node u = g.right;
+                if (isRed(u)) {                 // Case 1
+                    setColor(p, BLACK);
+                    setColor(u, BLACK);
+                    setColor(g, RED);
+                    z = g;
+                } else {
+                    if (z == p.right) {         // Case 2
+                        rotateLeft(p);
+                        z = p;
+                        p = z.parent;
+                    }
+                    setColor(p, BLACK);         // Case 3
+                    setColor(g, RED);
+                    rotateRight(g);
+                }
+            } else {
+                Node u = g.left;
+                if (isRed(u)) {                 // Case 1 (mirror)
+                    setColor(p, BLACK);
+                    setColor(u, BLACK);
+                    setColor(g, RED);
+                    z = g;
+                } else {
+                    if (z == p.left) {          // Case 2 (mirror)
+                        rotateRight(p);
+                        z = p;
+                        p = z.parent;
+                    }
+                    setColor(p, BLACK);         // Case 3 (mirror)
+                    setColor(g, RED);
+                    rotateLeft(g);
+                }
+            }
+        }
+        setColor(root, BLACK);
+    }
+
+
+        
+    
 
     // ------------------------------------------------------------------
     // PROVIDED — deletion (not covered in detail in class; read it, do not change it)

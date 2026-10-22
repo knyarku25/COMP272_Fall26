@@ -127,18 +127,46 @@ public class AVLTree extends BinarySearchTree {
 
     @Override
     public boolean delete(int value) {
-        // TODO (Exercise 1): AVL deletion also requires rebalancing.
-        // Remove value as in a BST, then restore the AVL balance condition
-        // on every node from the right starting point up to the root.
-        throw new UnsupportedOperationException(
-            "Implement AVL deletion with rebalancing"
-        );
+        Node target = findNode(value);
+            if (target == null) {
+                return false;
+            }
+        
+            // Two children: the inoder successor's value is copied and the sucessor is removed.
+            if (target.left != null && target.right != null) {
+                Node successor = minimum(target.right);
+                target.value = successor.value;
+                target = successor;
+            }
+
+            Node child = (target.left != null) ? target.left : target.right;
+            Node parentofRemoved = target.parent;
+
+            transplant(target, child);
+            size--;
+
+            //Rebalance from the parent of the physically removed node up to the root.
+            rebalanceUpward(parentofRemoved);
+            return true;
+      
     }
 
     /*
      * ======================== Exercise 1, Part B — Analysis ========================
+     *Let n be the number of nodes. An AVL tree has heoght h = O(log n).
      *
-     *
+     *Q1. delete is O(log n) in the worst case.
+     * - Finding the node: findNopde follows one root-to-node path, O(h).
+     * - Finding the successor: minimum follows left links down, at most h steps, O(h).
+     * - Removing it: transplant changes a constant number of pointers, O(1).
+     * - Rebalancing: rebalanceUpward visits at most h + 1 anscestors, doing O(1).
+     *   work at each (height update, balance check, at mot 2 rotations), O(h).
+     * Total: O(h) = O(log n ).
+     * 
+     * Q2. One deletion can rotate at every level on the path to the reoot:
+     * at most 2 per level, so O(log n) rotations. A rotation after a deletion
+     * can leave the subtree one level shorter, which can unbalance an ancestor.
+     * the subtree to its  height before the insertion, so no ancestor's balance changes.
      * ===============================================================================
      */
 
