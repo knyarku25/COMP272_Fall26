@@ -53,3 +53,24 @@ The tests read files from the `data` folder with relative paths such as `data/..
 
 - Do not change the interface or the signatures of the `DatasetReader` methods, and do not delete or weaken the provided tests. You may **add** methods, classes, and tests.
 - `java.util` classes used inside the tests (e.g. `TreeMap`, `LinkedHashMap`) are only **references** to check your answers.
+
+---
+
+## Stage 3 status (Kofi Nyarku)
+
+| Class | What it is |
+|---|---|
+| `DatasetReader` | Reads `count_1w.txt` and Gutenberg books. Tokenizer rules are in its class comment. |
+| `Solution1` | Hash table with separate chaining (my own code, based on `M05/ChainHashMap.java`), with counters. |
+| `Solution2` | Red-Black tree using `java.util.TreeMap`; `complete` walks only the words that match the prefix. |
+| `TopK` | Small heap shared by both solutions to rank `complete` results. |
+| `DatasetReaderTest` | Tests of the reader and tokenizer on small temporary files. |
+
+Progress note: `docs/Stage3_Progress_Note.pdf`
+
+Data needed by the dataset tests (put both in `data/`; they are not committed):
+
+- `count_1w.txt` from https://norvig.com/ngrams/count_1w.txt
+- `pg11.txt` (Alice's Adventures in Wonderland) from https://www.gutenberg.org/ebooks/11, Plain Text UTF-8
+
+Run `mvn test` from this folder: 133 tests (60 on Solution1, 55 on Solution2, 18 on DatasetReader).
