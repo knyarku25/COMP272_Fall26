@@ -1,0 +1,4 @@
+# Dataset files are large: do not commit them (see README).
+*
+!.gitignore
+!README.md
