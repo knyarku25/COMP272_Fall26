@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeMap;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -214,9 +213,7 @@ abstract class DictionaryTest {
     // Tests from the dataset
     // ------------------------------------------------------------------
 
-    @Test
-    @Disabled("Remove this line once DatasetReader.readWordCounts works "
-            + "and count_1w.txt is in the data folder")
+        @Test
     void everyWordOfTheDatasetIsFoundWithItsCount() throws IOException {
         List<DatasetReader.WordCount> words =
                 DatasetReader.readWordCounts(Path.of("data", "count_1w.txt"), 10_000);
