@@ -49,8 +49,13 @@ import java.util.Objects;
  */
 public class Solution1 implements Dictionary {
 
-    /** Turn the counters off (false) before measuring time. */
-    public static final boolean COUNTERS = true;
+    /**
+     * The counters are on by default, because my tests use them. The benchmark
+     * turns them off with -Dautocomplete.counters=false, so counting does not slow
+     * down the timings.
+     */
+    public static final boolean COUNTERS =
+            !"false".equals(System.getProperty("autocomplete.counters"));
 
     private static final int STARTING_BUCKETS = 16;       // must be a power of two
     private static final double MAX_LOAD_FACTOR = 0.75;   // grow when more than 75% full

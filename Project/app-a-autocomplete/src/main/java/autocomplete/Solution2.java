@@ -45,8 +45,13 @@ import java.util.TreeMap;
  */
 public class Solution2 implements Dictionary {
 
-    /** Turn the counter off (false) before measuring time. */
-    public static final boolean COUNTERS = true;
+    /**
+     * The counter is on by default, because my tests use it. The benchmark
+     * turns it off with -Dautocomplete.counters=false, so counting does not slow
+     * down the timings.
+     */
+    public static final boolean COUNTERS =
+            !"false".equals(System.getProperty("autocomplete.counters"));
 
     /** The Red-Black tree: each word maps to its count, kept in alphabetical order. */
     private final TreeMap<String, Long> tree = new TreeMap<>();
