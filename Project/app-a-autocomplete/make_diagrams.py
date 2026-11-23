@@ -2,7 +2,11 @@
 
     python make_diagrams.py
 
-writes docs/figures/hash_table.png and docs/figures/red_black_tree.png.
+writes four figures to docs/figures/:
+    hash_table.png       Solution 1, and why complete() must visit every bucket
+    red_black_tree.png   Solution 2, and how complete() visits only the matching range
+    top_k.png            the ranking step both solutions share (my TopK class)
+    project_structure.png  how the code fits together
 
 Both pictures use a few real words. The hash table puts each word in the same
 bucket my Solution1 would (Java's String.hashCode, mixed with h ^ (h >>> 16)),
@@ -15,7 +19,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle, FancyArrowPatch, Rectangle
+from matplotlib.patches import Circle, FancyArrowPatch, FancyBboxPatch, Rectangle
 
 plt.rcParams["font.family"] = "serif"
 plt.rcParams["font.serif"] = ["Times New Roman", "Liberation Serif", "DejaVu Serif"]
@@ -177,11 +181,141 @@ def draw_red_black_tree():
     plt.close(fig)
 
 
+# ----- TopK: the ranking step ---------------------------------------------------------
+
+def draw_top_k():
+    """Replays my TopK class on the 6 words of the tree figure, with k = 3.
+
+    The counts are the real ones from count_1w.txt. The words arrive in the order the
+    tree finds them (alphabetical). The hash table finds them in bucket order instead,
+    but TopK ends with the same 3 words either way.
+    """
+    k = 3
+    offered = [("that", 3_400_031_103), ("the", 23_135_851_162), ("their", 782_849_411),
+               ("there", 701_170_205), ("they", 883_223_816), ("this", 3_228_469_771)]
+
+    def billions(c):
+        return f"{c / 1e9:.2f} B"
+
+    rows = []
+    heap = []                                          # (count, word); worst = smallest count
+    for word, count in offered:
+        if len(heap) < k:
+            heap.append((count, word))
+            action = "heap not full: add"
+        else:
+            worst = min(heap)
+            if count > worst[0]:
+                heap.remove(worst)
+                heap.append((count, word))
+                action = f"beats {worst[1]}: replace it"
+            else:
+                action = f"loses to {worst[1]}: skip"
+        kept = ", ".join(w for c, w in sorted(heap))
+        rows.append((word, billions(count), action, kept))
+    result = [w for c, w in sorted(heap, reverse=True)]
+
+    fig, ax = plt.subplots(figsize=(7.6, 3.6))
+    headers = ("word offered", "count", "what TopK does", "heap after (worst first)")
+    xs = (0.0, 1.35, 2.55, 5.0)
+    y = 0
+    for x, h in zip(xs, headers):
+        ax.text(x, y, h, fontsize=10, fontweight="bold", va="center")
+    ax.plot([0, 7.4], [y - 0.35, y - 0.35], color="black", lw=0.8)
+    for word, count, action, kept in rows:
+        y -= 0.62
+        skipped = "skip" in action
+        for x, value in zip(xs, (word, count, action, kept)):
+            ax.text(x, y, value, fontsize=10, va="center", color="grey" if skipped else "black")
+    y -= 0.55
+    ax.plot([0, 7.4], [y + 0.2, y + 0.2], color="black", lw=0.8)
+    ax.text(0, y - 0.25, f"result(): sort the {k} kept words, best first  ->  " + ", ".join(result),
+            fontsize=10, va="center")
+    ax.text(0, y - 0.85,
+            f"Each offer costs O(log k): compare with the worst kept word, and only touch the heap if it wins.\n"
+            f"For m matching words: O(m log k) time and O(k) memory, the same code in both solutions.",
+            fontsize=9.5, va="top")
+    ax.set_xlim(-0.1, 7.5)
+    ax.set_ylim(y - 1.9, 0.5)
+    ax.axis("off")
+    ax.set_title(f'Ranking the matches of "{PREFIX}" with TopK (a min-heap of size k = {k})', fontsize=11)
+    fig.savefig(OUT / "top_k.png", dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    return result
+
+
+# ----- project structure ----------------------------------------------------------------
+
+def draw_project_structure():
+    fig, ax = plt.subplots(figsize=(8.2, 5.4))
+
+    def box(x, y, w, h, title, note="", fill="white", dashed=False):
+        ax.add_patch(FancyBboxPatch((x - w / 2, y - h / 2), w, h, boxstyle="round,pad=0.02,rounding_size=0.08",
+                                    facecolor=fill, edgecolor="black", lw=1.2,
+                                    linestyle="--" if dashed else "-"))
+        ax.text(x, y + (0.13 if note else 0), title, ha="center", va="center", fontsize=10, fontweight="bold")
+        if note:
+            ax.text(x, y - 0.17, note, ha="center", va="center", fontsize=8.5)
+
+    def arrow(x1, y1, x2, y2, label="", hollow=False):
+        ax.add_patch(FancyArrowPatch((x1, y1), (x2, y2),
+                                     arrowstyle="-|>",
+                                     mutation_scale=12, lw=1.0, color="black",
+                                     linestyle="--" if hollow else "-"))
+        if label:
+            ax.text((x1 + x2) / 2 + 0.08, (y1 + y2) / 2, label, fontsize=8.5, va="center")
+
+    # data and reading
+    box(1.6, 5.0, 2.6, 0.62, "count_1w.txt", "333,333 words with counts", fill=VISITED, dashed=True)
+    box(5.4, 5.0, 3.0, 0.62, "12 Gutenberg books", "1,986,147 words of real text", fill=VISITED, dashed=True)
+    box(3.5, 3.85, 2.6, 0.62, "DatasetReader", "reads and tokenizes")
+    arrow(1.6, 4.68, 3.0, 4.17)
+    arrow(5.4, 4.68, 4.0, 4.17)
+
+    # the three programs that use the interface
+    box(1.0, 2.65, 1.8, 0.62, "JUnit tests", "DictionaryTest: both")
+    box(3.5, 2.65, 1.8, 0.62, "Benchmark", "bench package")
+    box(6.0, 2.65, 1.8, 0.62, "Demo", "live demo")
+    for x in (1.0, 3.5, 6.0):
+        arrow(3.5, 3.53, x, 2.97)
+
+    # the interface and the two solutions
+    box(3.5, 1.45, 3.0, 0.62, "Dictionary (interface)", "add, remove, contains, frequency, complete, size",
+        fill=MATCH)
+    for x in (1.0, 3.5, 6.0):
+        arrow(x, 2.33, 3.5 + (x - 3.5) * 0.45, 1.77)
+    ax.text(3.6, 2.05, "use only the interface", fontsize=8.5, va="center")
+    box(1.6, 0.1, 2.6, 0.62, "Solution1", "my hash table (chaining)")
+    box(5.4, 0.1, 2.6, 0.62, "Solution2", "adapter around TreeMap")
+    arrow(1.6, 0.42, 2.8, 1.13, hollow=True)
+    arrow(5.4, 0.42, 4.2, 1.13, hollow=True)
+    ax.text(1.75, 0.8, "implements", fontsize=8.5, ha="right", va="center")
+    ax.text(5.25, 0.8, "implements", fontsize=8.5, ha="left", va="center")
+    ax.text(3.5, -0.45, "both call", fontsize=8.5, ha="center", va="center")
+    box(3.5, -1.05, 2.0, 0.62, "TopK", "shared min-heap")
+    arrow(1.6, -0.22, 2.8, -0.85)
+    arrow(5.4, -0.22, 4.2, -0.85)
+
+    ax.text(-0.3, -1.75,
+            "Everything above the interface only knows Dictionary, so the tests, the benchmark and the demo run\n"
+            "unchanged on both solutions, and both rank completions with the same TopK class: a fair comparison.",
+            fontsize=9.5, va="top")
+    ax.set_xlim(-0.4, 7.4)
+    ax.set_ylim(-2.4, 5.5)
+    ax.axis("off")
+    ax.set_title("How my project fits together", fontsize=11)
+    fig.savefig(OUT / "project_structure.png", dpi=200, bbox_inches="tight")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     chains = draw_hash_table()
     draw_red_black_tree()
+    top = draw_top_k()
+    draw_project_structure()
     for i, chain in enumerate(chains):
         if chain:
             print(f"  bucket {i:2d}: {' -> '.join(chain)}")
-    print(f"Wrote {OUT / 'hash_table.png'} and {OUT / 'red_black_tree.png'}")
+    print(f'  TopK result for "{PREFIX}", k = 3: {", ".join(top)}')
+    print(f"Wrote 4 figures to {OUT}")
