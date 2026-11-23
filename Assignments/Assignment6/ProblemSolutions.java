@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Kofi Minta Nyarku / COMP 272
  *
  *   This java file contains the problem solutions of isSubSet, findKthLargest,
  *   and sort2Arrays methods. You should utilize the Java Collection Framework for
@@ -33,9 +33,16 @@ class ProblemSolutions {
 
     public boolean isSubset(int list1[], int list2[]) {
 
-        // ADD YOUR CODE HERE -- DON'T FORGET TO ADD YOUR NAME AT TOP OF FILE
-
-        return false;
+        HashMap<Integer, Boolean> seen = new HashMap<>();
+        for (int x : list1) {
+            seen.put(x, true);
+        }
+        for (int x : list2) {
+            if (!seen.containsKey(x)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -58,9 +65,14 @@ class ProblemSolutions {
 
     public int findKthLargest(int[] array, int k) {
 
-        // ADD YOUR CODE HERE
-
-        return 0;
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        for (int x : array) {
+            minHeap.offer(x);
+            if (minHeap.size() > k) {
+                minHeap.poll();
+            }
+        }
+        return minHeap.peek();
     }
 
 
@@ -82,9 +94,16 @@ class ProblemSolutions {
 
     public int[] sort2Arrays(int[] array1, int[] array2) {
 
-        // ADD YOUR CODE HERE
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int x : array1) pq.offer(x);
+        for (int x : array2) pq.offer(x);
 
-        return null;
+        int[] result = new int[pq.size()];
+        int i = 0;
+        while (!pq.isEmpty()) {
+            result[i++] = pq.poll();
+        }
+        return result;
     }
 
 }

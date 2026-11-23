@@ -1,7 +1,7 @@
 
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Kofi Minta Nyarku / COMP 272
  *
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
@@ -248,11 +248,34 @@ public class CuckooHash<K, V> {
 
  	public void put(K key, V value) {
 
-		// ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME AT TOP OF FILE.
-		// Also make sure you read this method's prologue above, it should help
-		// you. Especially the two HINTS in the prologue.
+		int pos1 = hash1(key);
+		int pos2 = hash2(key);
+		if ((table[pos1] != null && table[pos1].getBucKey().equals(key)
+				&& table[pos1].getValue().equals(value)) ||
+			(table[pos2] != null && table[pos2].getBucKey().equals(key)
+				&& table[pos2].getValue().equals(value))) {
+			return;
+		}
 
-		return;
+		Bucket<K, V> current = new Bucket<K, V>(key, value);
+		int pos = pos1;
+
+		for (int i = 0; i < CAPACITY; i++) {
+			if (table[pos] == null) {
+				table[pos] = current;
+				return;
+			}
+
+			Bucket<K, V> evicted = table[pos];
+			table[pos] = current;
+			current = evicted;
+
+			K evKey = current.getBucKey();
+			pos = (pos == hash1(evKey)) ? hash2(evKey) : hash1(evKey);
+		}
+
+		rehash();
+		put(current.getBucKey(), current.getValue());
 	}
 
 
