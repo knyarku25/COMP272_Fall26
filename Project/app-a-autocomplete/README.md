@@ -74,3 +74,27 @@ Data needed by the dataset tests (put both in `data/`; they are not committed):
 - `pg11.txt` (Alice's Adventures in Wonderland) from https://www.gutenberg.org/ebooks/11, Plain Text UTF-8
 
 Run `mvn test` from this folder: 133 tests (60 on Solution1, 55 on Solution2, 18 on DatasetReader).
+
+---
+
+## Stage 4: benchmarks (Kofi Nyarku)
+
+Results PDF (machine details, method, A-N targets, plots): `docs/Stage4_Benchmark_Results.pdf`
+
+| File | What it is |
+|---|---|
+| `src/main/java/autocomplete/bench/` | Benchmark harness: `Benchmark` (experiments), `Measurement` (warm-up, repeats, median/min/max, checksum), `Workloads` (inputs, fixed seed 272), `MachineInfo`, `CsvWriter` |
+| `run_benchmarks.ps1` / `run_benchmarks.sh` | Run everything: each solution in its own JVM, then the counters |
+| `plot_results.py` | Makes `results/plots/*.png` and the PDF from the CSV files |
+| `results/*_runs.csv` | Raw times of every measured run |
+| `results/*_summary.csv` | Median, min, max per data point |
+| `results/*_memory.csv`, `results/counters.csv`, `results/*_machine.csv` | Memory, instrumentation counters, machine details |
+
+To reproduce (from this folder, with the data files of Stage 3 plus pg1342, pg84, pg1661, pg2701, pg98 in `data/`):
+
+    powershell -ExecutionPolicy Bypass -File run_benchmarks.ps1     (Windows)
+    ./run_benchmarks.sh                                             (Mac/Linux)
+    python -m pip install matplotlib
+    python plot_results.py
+
+Add `--quick` to the run script for a 1-minute check (writes `results_quick/`).
