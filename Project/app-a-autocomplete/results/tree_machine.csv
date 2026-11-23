@@ -1,5 +1,5 @@
 key,value
-date,2026-11-22T20:44:49.7511538-06:00
+date,2026-11-22T22:13:15.3307386-06:00
 cpu,Intel(R) Core(TM) Ultra 9 288V
 logical_cores,8
 ram_total_gb,34.0
@@ -11,3 +11,5 @@ max_heap_mb,2048
 jvm_args,-Xmx2g -Xms2g -Dautocomplete.counters=false
 warmup_runs,5
 measured_runs,7
+real_text_words,1986147
+books,12

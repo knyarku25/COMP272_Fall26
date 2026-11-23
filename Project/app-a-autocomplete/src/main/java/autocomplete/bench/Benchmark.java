@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -97,13 +98,18 @@ public final class Benchmark {
             if (Solution1.COUNTERS || Solution2.COUNTERS) {
                 System.out.println("WARNING: counters are ON. Add -Dautocomplete.counters=false for timing runs.");
             }
-            MachineInfo.write(out.resolve(solution + "_machine.csv"));   // the JVM that made these timings
+            MachineInfo.write(out.resolve(solution + "_machine.csv"), Map.of(   // the JVM that made these timings
+                    "books", String.valueOf(booksRead),
+                    "real_text_words", String.valueOf(w.realText.length)));
             runTimings(solution, factory, w, sizes, data, out);
             runMemory(solution, factory, w, sizes, out.resolve(solution + "_memory.csv"));
         }
         System.out.printf(Locale.ROOT, "Done in %.1f s. checksum=%d%n",
                 (System.nanoTime() - startTime) / 1e9, Measurement.checksum);
     }
+
+    /** How many books readBooks() found (recorded in the machine CSV and the PDF). */
+    static int booksRead;
 
     /** All words of every data/pg*.txt book, in file-name order. */
     static List<String> readBooks(Path data) throws IOException {
@@ -115,6 +121,7 @@ public final class Benchmark {
         if (books.isEmpty()) {
             throw new IOException("No books found: put Gutenberg files named pg*.txt in " + data);
         }
+        booksRead = books.size();
         List<String> words = new ArrayList<>();
         for (Path book : books) {
             List<String> bookWords = DatasetReader.readBookWords(book);

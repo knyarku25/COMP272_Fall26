@@ -370,8 +370,9 @@ def text_page():
               "I report the median, with min and max as error bars. Batches shorter than 20 ms are repeated.",
               "A checksum of every result is printed, so the JIT cannot remove the work. Counters are off",
               "during timing (-Dautocomplete.counters=false) and measured in a separate run.",
-              "Inputs are fixed: the n most frequent words, all words of 6 Gutenberg books, 100,000",
-              "misspellings and 100 prefixes per length generated with seed 272."):
+              f"Inputs are fixed: the n most frequent words, all {int(machine.get('real_text_words', 0)):,} words "
+              f"of {machine.get('books', '?')} Gutenberg books,",
+              "100,000 misspellings and 100 prefixes per length generated with seed 272."):
         line(t, 10, dy=0.019)
     y -= 0.014
 

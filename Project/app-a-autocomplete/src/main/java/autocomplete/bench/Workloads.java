@@ -22,7 +22,7 @@ final class Workloads {
     static final int[] PREFIX_LENGTHS = {1, 2, 3, 5};
     static final int PREFIX_QUERIES = 100;         // prefixes per length
     static final int MISSPELLINGS = 100_000;
-    static final int MAX_TEXT_WORDS = 1_000_000;   // cap on the real-text workload
+    static final int MAX_TEXT_WORDS = 3_000_000;   // cap on the real-text workload (12 books: about 2 million words)
     static final int MIXED_OPS = 100_000;          // operations in the update workload
 
     /** The full word list, most frequent first (file order). */

@@ -40,9 +40,12 @@ final class MachineInfo {
         return info;
     }
 
-    static void write(Path file) throws IOException {
+    /** Writes the machine details, plus extra facts about the run (e.g. how many books were read). */
+    static void write(Path file, Map<String, String> extra) throws IOException {
+        Map<String, String> info = collect();
+        info.putAll(extra);
         try (CsvWriter csv = new CsvWriter(file, "key", "value")) {
-            for (Map.Entry<String, String> e : collect().entrySet()) {
+            for (Map.Entry<String, String> e : info.entrySet()) {
                 // Commas would break the CSV columns.
                 csv.row(e.getKey(), e.getValue().replace(',', ';'));
             }
